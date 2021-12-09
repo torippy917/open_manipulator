@@ -10,6 +10,7 @@ import quaternion
 from moveit_commander import MoveGroupCommander, RobotCommander
 from geometry_msgs.msg import Pose, PoseStamped
 
+pi = math.pi
 
 # 回転ベクトルからクオータニオンを生成する.
 def rotationVector2quaternion(vec, rad):
