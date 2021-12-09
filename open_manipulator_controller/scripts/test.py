@@ -29,22 +29,22 @@ class Arm:
         self.gripper_group = MoveGroupCommander("gripper")
         self.group.set_planning_time(600.0)
 
-    def move(self, position, quaternion):
-        pose_init = Pose()
-        pose_init.position.x =  position[0]
-        pose_init.position.y =  position[1]
-        pose_init.position.z =  position[2]
-        pose_init.orientation.x =  quaternion.x
-        pose_init.orientation.y =  quaternion.y
-        pose_init.orientation.z =  quaternion.z
-        pose_init.orientation.w =  quaternion.w
-        self.group.set_joint_value_target(pose_init, True)
+    def move(self, x, y, z, pitch):
+        pose = Pose()
+        pose.position.x = x
+        pose.position.y = y
+        pose.position.z = z
+        quat = rv2q(np.array([0,1,0]), pitch)
+        quat = rv2q(np.array([0,0,1]), math.atan2(y,x)) * quat
+        pose.orientation.w = quat.w
+        pose.orientation.x = quat.x
+        pose.orientation.y = quat.y
+        pose.orientation.z = quat.z
+        self.group.set_joint_value_target(pose, True)
         self.group.go()
 
     def moveDefault(self):
-        pos = [0.2, 0.0, 0.1]
-        quat = rotationVector2quaternion(np.array([0,1,0]), math.pi/2)
-        self.move(pos, quat)
+        self.move(0.2, 0.0, 0.25, 0.0)
 
     def logPose(self):
         pose_current = self.group.get_current_pose()
