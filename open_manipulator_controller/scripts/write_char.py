@@ -29,7 +29,23 @@ class Arm:
         self.group = MoveGroupCommander("arm")
         self.gripper_group = MoveGroupCommander("gripper")
         self.group.set_planning_time(600.0)
+        self.gripper_joint_angle = self.gripper_group.get_current_joint_values()
 
+    def moveGripper(self, angle):
+        self.gripper_joint_angle[0] = angle
+        self.gripper_group.set_joint_value_target(self.gripper_joint_angle)
+        self.gripper_group.go()
+        self.gripper_group.stop()
+        self.gripper_group.clear_pose_targets()
+
+    def holdBrush(self):
+        rospy.loginfo("hold a brush.")
+        self.moveGripper(0.01)
+        self.move(0.2, 0.0, 0.03, pi/2.0)
+        self.moveGripper(-0.01)
+        self.move(0.2, 0.0, 0.25, pi/2.0)
+        self.move(0.2, 0.0, 0.25, 0.0)
+            
     def move(self, x, y, z, pitch):
         pose = Pose()
         pose.position.x = x
@@ -58,6 +74,8 @@ def main():
 
     arm = Arm()
     arm.moveDefault()
+    arm.logPose()
+    arm.holdBrush()
     arm.logPose()
 
 
