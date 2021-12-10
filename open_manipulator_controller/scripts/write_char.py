@@ -25,12 +25,13 @@ rv2q = rotationVector2quaternion
 
 
 class Arm:
-    def __init__(self, write_origin, resolution = 0.05, log = True):
+    def __init__(self, write_origin, scale, resolution = 0.05, log = True):
         self.group = MoveGroupCommander("arm")
         self.gripper_group = MoveGroupCommander("gripper")
         self.group.set_planning_time(600.0)
         self.gripper_joint_angle = self.gripper_group.get_current_joint_values()
         self.write_origin = np.array(write_origin)
+        self.scale = 0.12/scale
         self.resolution = resolution
         self.z_write = 0.13
         self.z_move = 0.15
@@ -46,9 +47,9 @@ class Arm:
 
     def holdBrush(self):
         rospy.loginfo("hold a brush.")
-        self.moveGripper(-0.01)
+        self.moveGripper(-0.005)
         self.move(0.2, 0.0, 0.03, pi/2.0)
-        self.moveGripper(0.01)
+        self.moveGripper(0.005)
         self.move(0.2, 0.0, 0.25, pi/2.0)
         self.move(0.2, 0.0, 0.25, 0.0)
             
@@ -72,7 +73,7 @@ class Arm:
         self.move(0.2, 0.0, 0.25, 0.0)
 
     def write(self, line):
-        line2 = np.array(line) + self.write_origin
+        line2 = (np.array(line) * self.scale) + self.write_origin
         self.move(line2[0,0], line2[0,1], self.z_move, self.pitch_write)
         for i in range(len(line2)-1):
             n = math.ceil(math.hypot(line2[i+1,0]-line2[i,0], line2[i+1,1]-line2[i,1])/self.resolution)
@@ -89,26 +90,31 @@ def main():
     node_name = "arm_demo2"
     rospy.init_node(node_name, anonymous=True ) # ノードの初期化
 
-    arm = Arm([0,0])
+    arm = Arm([0.1, -0.06], 70.0, 0.01)
     arm.moveDefault()
-    # arm.holdBrush()
-    arm.move(0.2, 0.0, 0.13, 0.0)
-    # line0 = [[61.0, 60.0], [22.0, 66.0]]
-    # line1 = [[61.0, 60.0], [61.0, 43.0], [22.0, 43.0]]
-    # line2 = [[44.0, 60.0], [44,0, 43.0]]
-    # line3 = [[22.0, 60.0], [22.0, 43.0]]
-    # line4 = [[63.0, 30.0], [31.0, 31.0], [23.0, 33.0], [13.0, 38.0], [5.0, 47.0]]
-    # line5 = [[63.0, 30.0], [63.0, 8.0], [8.0, 8.0], [10.0, 19.0]]
-    # line6 = [[42.0, 30.0], [42.0, 8.0]]
-    # line7 = [[31.0, 31.0], [31.0, 8.0]]
+    arm.holdBrush()
+
+    # arm.move(0.1, 0.0, 0.13, 0.0)
+
+    # line0 = [[0.0, 0.0], [0.0, 70.0], [70.0, 70.0], [70.0, 0.0], [0.0, 0.0]]
     # arm.write(line0)
-    # arm.write(line1)
-    # arm.write(line2)
-    # arm.write(line3)
-    # arm.write(line4)
-    # arm.write(line5)
-    # arm.write(line6)
-    # arm.write(line7)
+
+    line0 = [[61.0, 60.0], [22.0, 66.0]]
+    line1 = [[61.0, 60.0], [61.0, 43.0], [22.0, 43.0]]
+    line2 = [[44.0, 60.0], [44.0, 43.0]]
+    line3 = [[22.0, 60.0], [22.0, 43.0]]
+    line4 = [[63.0, 30.0], [31.0, 31.0], [23.0, 33.0], [13.0, 38.0], [5.0, 47.0]]
+    line5 = [[63.0, 30.0], [63.0, 8.0], [8.0, 8.0], [10.0, 19.0]]
+    line6 = [[47.0, 30.0], [47.0, 8.0]]
+    line7 = [[31.0, 31.0], [31.0, 8.0]]
+    arm.write(line0)
+    arm.write(line1)
+    arm.write(line2)
+    arm.write(line3)
+    arm.write(line4)
+    arm.write(line5)
+    arm.write(line6)
+    arm.write(line7)
 
     arm.moveDefault()
 
