@@ -32,8 +32,8 @@ class Arm:
         self.gripper_joint_angle = self.gripper_group.get_current_joint_values()
         self.write_origin = np.array(write_origin)
         self.resolution = resolution
-        self.z_write = 0.08
-        self.z_move = 0.1
+        self.z_write = 0.13
+        self.z_move = 0.15
         self.pitch_write = 0.0
         self.log = log
 
@@ -46,9 +46,9 @@ class Arm:
 
     def holdBrush(self):
         rospy.loginfo("hold a brush.")
-        self.moveGripper(0.01)
-        self.move(0.2, 0.0, 0.03, pi/2.0)
         self.moveGripper(-0.01)
+        self.move(0.2, 0.0, 0.03, pi/2.0)
+        self.moveGripper(0.01)
         self.move(0.2, 0.0, 0.25, pi/2.0)
         self.move(0.2, 0.0, 0.25, 0.0)
             
@@ -89,26 +89,26 @@ def main():
     node_name = "arm_demo2"
     rospy.init_node(node_name, anonymous=True ) # ノードの初期化
 
-    arm = Arm()
+    arm = Arm([0,0])
     arm.moveDefault()
-    arm.holdBrush()
-
-    line0 = [[61.0, 60.0], [22.0, 66.0]]
-    line1 = [[61.0, 60.0], [61.0, 43.0], [22.0, 43.0]]
-    line2 = [[44.0, 60.0], [44,0, 43.0]]
-    line3 = [[22.0, 60.0], [22.0, 43.0]]
-    line4 = [[63.0, 30.0], [31.0, 31.0], [23.0, 33.0], [13.0, 38.0], [5.0, 47.0]]
-    line5 = [[63.0, 30.0], [63.0, 8.0], [8.0, 8.0], [10.0, 19.0]]
-    line6 = [[42.0, 30.0], [42.0, 8.0]]
-    line7 = [[31.0, 31.0], [31.0, 8.0]]
-    arm.write(line0)
-    arm.write(line1)
-    arm.write(line2)
-    arm.write(line3)
-    arm.write(line4)
-    arm.write(line5)
-    arm.write(line6)
-    arm.write(line7)
+    # arm.holdBrush()
+    arm.move(0.2, 0.0, 0.13, 0.0)
+    # line0 = [[61.0, 60.0], [22.0, 66.0]]
+    # line1 = [[61.0, 60.0], [61.0, 43.0], [22.0, 43.0]]
+    # line2 = [[44.0, 60.0], [44,0, 43.0]]
+    # line3 = [[22.0, 60.0], [22.0, 43.0]]
+    # line4 = [[63.0, 30.0], [31.0, 31.0], [23.0, 33.0], [13.0, 38.0], [5.0, 47.0]]
+    # line5 = [[63.0, 30.0], [63.0, 8.0], [8.0, 8.0], [10.0, 19.0]]
+    # line6 = [[42.0, 30.0], [42.0, 8.0]]
+    # line7 = [[31.0, 31.0], [31.0, 8.0]]
+    # arm.write(line0)
+    # arm.write(line1)
+    # arm.write(line2)
+    # arm.write(line3)
+    # arm.write(line4)
+    # arm.write(line5)
+    # arm.write(line6)
+    # arm.write(line7)
 
     arm.moveDefault()
 
